@@ -1,0 +1,91 @@
+/* 
+Instituto Tecnológico de Costa Rica.
+Análisis de Algoritmos.
+Tarea 05 Natural Sort.
+Estudiante:
+	Tamara Nicole Rodríguez Luna.
+Carnet:
+	2021077818.
+Natural Sort.
+*/
+
+/*Esta función recibe dos listas ordenadas y produce una nueva lista ordendada.*/
+mezclar(lista1,lista2):=block(
+	[largo,i,res],
+	largo: length(lista1)+length(lista2),
+	res:[],
+	for i:1 thru largo do(
+		if length(res) < largo then(
+			if lista1 = [] then(
+				res: append(res,lista2)
+			) else if lista2 = [] then(
+				res: append(res,lista1)
+			) else(
+				if first(lista1) < first(lista2) then (
+					res: endcons(first(lista1),res),
+					lista1: rest(lista1)
+				) else (
+					res: endcons(first(lista2),res),
+					lista2: rest(lista2)
+				)
+			)
+		)
+	),
+	return(res)
+);
+
+/*
+Esta función recibe como elemento de entrada una lista desordenada y produce una lista de listas, 
+donde cada sublista mantiene el orden natural de la lista original.
+*/
+natural(lista):=block(
+	[res,anterior,sublistas],
+	res:[],
+	anterior:false,
+	sublistas:0,
+	for e in lista do (
+		if anterior = false then (
+			res: endcons([e],res),
+			sublistas:sublistas+1
+		) else if anterior <= e then (
+			res[sublistas]: endcons(e,res[sublistas])
+		)else(
+			res: endcons([e],res),
+			sublistas:sublistas+1
+		),
+		anterior: e
+	),
+	return(res)
+);
+
+/*Esta función recibe como argumento una lista desordenada y devuelve una lista ordenada*/
+naturalSort(lista):=block(
+	[res,mezcla],
+	res:natural(lista),
+	while length(res) > 1 do(
+		mezcla: mezclar(res[1],res[2]),
+		res: rest(res,2),
+		res: cons(mezcla,res)
+	),
+	return(res[1])
+);
+
+/*Encuentre el valor de BigOh del Algoritmo.*/
+
+/*
+Como vimos en clase, algoritmo de mezclar() es un BigOh(n) donde n=n1+n2,
+siendo n1 el tamaño de la primera lista y n2 el tamaño de la segunda lista.
+
+Considerando que el algoritmo de natural() recorre una sola vez todos los elementos de la lista 
+que recibe para ponerlos en la lista de listas, podemos concluir que su BigOh es también BigOh(n).
+
+El siguiente punto sería encontrar el el valor de BigOh de naturalSort(), por un lado, se sabe 
+que natural() solo se ejecutará 1 vez,y por el otro lado, se sabe que mezclar() se ejecutará hasta 
+que ya no queden más sublistas, por lo tanto, el peor caso sería que natural() devuelva una lista 
+rellena de listas con 1 elemento cada una, porque para unificar todo en una misma lista se debería 
+de ejecutar a mezclar() n-1 veces donde n es la cantidad de elementos de la lista original que también 
+coincide con la cantidad de sublistas que generó natural(). Considerando todo lo anterior, primero se 
+ejecuta natural() con un BigOh(n),  luego se ejecuta mezclar() con un BigOh(n) n-1 veces, dicho de otro 
+modo el BigOh de este segundo fragmento sería BigOh(n^2), en conclusión el BigOh de naturalSort() sería 
+BigOh(n^2+n) que también se puede ver como BigOh(n^2).
+*/

@@ -1,0 +1,229 @@
+/*********************************
+*   Técnicas de búsqueda
+*   en un grafo
+*   DFS
+*
+*/
+
+
+
+/********************************
+*  Representación Gráfica
+*
+*
+*       (b)─────────(d)─────────(x)
+*      ╱   ╲       ╱
+*     ╱     ╲     ╱
+*    ╱       ╲   ╱
+*   ╱         ╲ ╱
+*(a)           ╳
+*   ╲         ╱ ╲
+*    ╲       ╱   ╲
+*     ╲     ╱     ╲
+*      ╲   ╱       ╲                    
+*       (c)─────────(e)─────────(z)
+*
+*
+*/
+
+
+
+/******************
+* Las conexiones 
+* de los nodos
+*
+*/   
+
+grafo:
+[
+[a, [b,c]  ],
+[b, [a,d,e]],
+[c, [a,d,e]],
+[d, [b,c,x]],
+[e, [b,c,z]],
+[x, [d]],
+[z, [e]]
+];
+
+
+/*********************************
+*   Hacemos un pprint
+*  
+*
+*/
+
+pprint(lista):=block
+(
+   if is(lista='[]) then
+      print("")
+   else
+   (
+      print(first(lista)),
+      pprint(rest(lista))
+   )   
+);
+
+
+
+
+/*****************
+* Una Solución
+*
+*/
+
+solución(fin,ruta):=block
+(
+   is(last(ruta)=fin)
+);
+
+
+
+
+/********************
+*   Vecinos
+*
+*/
+
+
+vecinos(ele,grafo):=block
+(  [vec],
+   vec:assoc(ele,grafo),
+   if vec=false then
+       '[]
+   else
+      vec   
+);
+
+
+
+/********************
+*  Extender una ruta 
+*
+*/
+
+agregarNodo(ele, ruta):=block
+(
+   if member(ele,ruta) then
+      '[]
+   else
+      endcons(ele,ruta)   
+);
+
+
+extender(ruta,grafo):=block
+(  [],
+   delete( '[],
+            map( lambda([x],agregarNodo(x,ruta)),
+                 vecinos(last(ruta),grafo)
+               )
+         )                    
+);
+
+   
+   
+
+/**************************
+*    Deep First Search
+*    una ruta
+*/
+
+prof(ini,fin,grafo):=block
+(
+   profAux( makelist(makelist(ini)),
+            fin,
+            grafo
+          ) 
+);
+
+
+profAux(listaR, fin, grafo):=block
+(  [ruta],
+   if listaR='[] then
+      '[]
+   elseif solución(fin,first(listaR)) then
+   (
+       print(listaR),
+       print("-----"),
+       first(listaR)
+   )
+   else
+   (
+       print(listaR),
+       ruta: first(listaR),
+       profAux( append( 
+                        extender(ruta,grafo), 
+                        rest(listaR)
+                       ),
+                fin,
+                grafo                
+              )
+   )           
+);
+       
+
+
+
+/**************************
+*    Deep First Search
+*    todas las ruta
+*/
+
+
+profTodas(ini,fin,grafo):=block
+(
+   profTodasAux( makelist(makelist(ini)),
+                 fin,
+                 grafo,
+                 '[]
+          ) 
+);
+
+
+
+profTodasAux(listaR, fin, grafo, listaS):=block
+(  [ruta],
+   if listaR='[] then
+   (
+      /**/
+	  print(listaR),
+      print("-----"),
+	  /**/
+      listaS
+   )   
+   elseif solución(fin,first(listaR)) then
+   (
+      /**/
+      print(listaR),
+      print("-----"),
+	  /**/
+      profTodasAux( rest(listaR),
+                    fin,
+                    grafo,
+                    endcons(first(listaR),listaS)
+                  )
+   )
+   else
+   (
+       /**/
+	   print(listaR), 
+	   /**/
+       ruta: first(listaR),
+       profTodasAux( append( 
+                             extender(ruta,grafo), 
+                             rest(listaR)
+                           ),
+                     fin,
+                     grafo,
+                     listaS                
+                    )
+   )           
+);
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,106 @@
+/* 
+Instituto Tecnológico de Costa Rica.
+Análisis de Algoritmos.
+Tarea 07 DFS y Reinas.
+Estudiante:
+	Tamara Nicole Rodríguez Luna.
+Carnet:
+	2021077818.
+Reinas.
+*/
+
+vecinos(n, pos):=block(
+	[res],
+	res:[],
+	if pos[1] < n then (
+		res: map(lambda([i], [pos[1] + 1, i]), makelist(i, i, 1, n))
+	),
+	return(res)
+);
+
+nuevoLibre(vecino, ruta, libres):=block(
+	[disponible],
+	disponible:true,
+	map(
+		lambda([reina],
+			if vecino[2] = reina[2] or abs(vecino[1]-reina[1]) = abs(vecino[2]-reina[2]) then (
+				disponible: false
+			)
+		),
+		ruta
+	),
+	if disponible then (
+		libres:endcons(vecino,libres)
+	),
+	return(libres)
+);
+
+extender(n,ruta):=block(
+	[finalRuta,vecinos, libres, disponible, res],
+	finalRuta: ruta[length(ruta)],
+	vecinos: vecinos(n, finalRuta),
+	libres:[],
+	disponible:true,
+	res:[],
+	libres: map(lambda([vecino], nuevoLibre(vecino, ruta, libres)),vecinos),
+	map(lambda([espacio],
+				if espacio # [] then(
+					res: endcons(endcons(first(espacio), ruta),res)
+				)
+			),
+		libres
+	),
+	return(res)
+);
+
+rutaExtendida(n,ruta):=block(
+	[extendido],
+	extendido:extender(n, ruta),
+	if extendido = [] then(
+		if res = [] and length(ruta) = n then(
+			res:ruta
+		)
+	) else (
+		res:profAux(n,extendido,res)
+	),
+	return(res)
+);
+
+prof(n):=block(
+	[reinas, ruta],
+	reinas:[],
+	reinas: map(lambda([i], [[1, i]]), makelist(i, i, 1, n)),
+	ruta: profAux(n,reinas,[]),
+	return(ruta)
+);
+
+profAux(n,reinas, res):=block(
+	map(lambda([ruta], rutaExtendida(n, ruta)), reinas),
+	return(res)
+);
+
+rutaExtendidaTodas(n,ruta):=block(
+	[extendido],
+	extendido:extender(n, ruta),
+	if extendido = [] then(
+		if length(ruta) = n then(
+			res: endcons(ruta, res)
+		)
+	) else (
+		res:profTodasAux(n,extendido,res)
+	),
+	return(res)
+);
+
+profTodas(n):=block(
+	[reinas,ruta],
+	reinas:[],
+	reinas: map(lambda([i], [[1, i]]), makelist(i, i, 1, n)),
+	ruta: profTodasAux(n,reinas,[]),
+	return(ruta)
+);
+
+profTodasAux(n,reinas, res):=block(
+	map(lambda([ruta], rutaExtendidaTodas(n, ruta)), reinas),
+	return(res)
+);

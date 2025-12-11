@@ -1,0 +1,115 @@
+/* 
+Instituto Tecnológico de Costa Rica.
+Análisis de Algoritmos.
+Tarea 08 Greedy TSP.
+Estudiante:
+	Tamara Nicole Rodríguez Luna.
+Carnet:
+	2021077818.
+Greedy TSP.
+*/
+
+distancia(ciudadInicio, ciudadVecina, grafo):=block(
+    [res],
+    for i:1 thru length(grafo) do(
+        if grafo[i][1] = ciudadInicio then(
+            for j:1 thru length(grafo[i][2]) do(
+                if grafo[i][2][j][1] = ciudadVecina then(
+                    res: grafo[i][2][j][2]
+                )
+            )
+        )
+    ),
+    return(res)
+);
+
+tspPermu(ciudadInicio,grafo):=block(
+	[res, ciudades, permu, recorridos, j, distancias, d],
+	res:[],
+    ciudades: [],
+    recorridos: [],
+    distancias: [],
+    for i:1 thru length(grafo) do(
+        ciudades: endcons(grafo[i][1], ciudades)
+    ),
+    ciudades: endcons(ciudadInicio, ciudades),
+    permu: permutations(ciudades),
+    permu: listify(permu),
+    for recorrido in permu do(
+        if recorrido[1] = ciudadInicio and recorrido[length(recorrido)] = ciudadInicio then(
+            recorridos: endcons(recorrido, recorridos)
+        )
+    ),
+    for recorrido in recorridos do(
+        distancias: endcons([recorrido], distancias),
+        d:0,
+        for i:1 thru length(recorrido)-1 do(
+            j:i+1,
+            d: d + distancia(recorrido[i], recorrido[j], grafo)
+        ),
+        distancias[length(distancias)]: cons(d, distancias[length(distancias)])
+    ),
+    distancias: sort(distancias),
+    d: distancias[1][1],
+    for recorrido in distancias do(
+        if recorrido[1] = d then(
+            res: endcons(recorrido[2], res)
+        )
+    ),
+    res: [res],
+    res: endcons(d, res),
+    return(res)
+);
+
+menorVecino(ciudadInicio,grafo, ruta):=block(
+    [res, distanciaMin],
+    distanciaMin: false,
+    for i:1 thru length(grafo) do(
+        if grafo[i][1] = ciudadInicio then(
+            for j:1 thru length(grafo[i][2]) do(
+                if not member(grafo[i][2][j][1], ruta) then(
+                    if distanciaMin = false then(
+                        res: grafo[i][2][j],
+                        distanciaMin: grafo[i][2][j][2]
+                    ),
+                    if grafo[i][2][j][2] < distanciaMin then(
+                        res: grafo[i][2][j],
+                        distanciaMin: grafo[i][2][j][2]
+                    )
+                )
+            )
+        )
+    ),
+    return(res)
+);
+
+miembrosListas(lista1, lista2):=block(
+    [res],
+    res: true,
+    for e in lista1 do(
+        if res = true then(
+            res: member(e, lista2)
+        )
+    ),
+    return(res)
+);
+
+tspGreedy(ciudadInicio,grafo):=block(
+    [res, distancia, vecinoMin, ciudades],
+    res:[ciudadInicio],
+    ciudades: [],
+    distancia: 0,
+    for i:1 thru length(grafo) do(
+        ciudades: endcons(grafo[i][1], ciudades)
+    ),
+    while not miembrosListas(ciudades, res) do(
+        vecinoMin: menorVecino(res[length(res)], grafo, res),
+        distancia: distancia + vecinoMin[2],
+        res: endcons(vecinoMin[1], res)
+    ),
+    distancia: distancia + distancia(res[length(res)], ciudadInicio, grafo),
+    res: endcons(ciudadInicio, res),
+    res: [res],
+    res: endcons(distancia, res),
+    return(res)
+);

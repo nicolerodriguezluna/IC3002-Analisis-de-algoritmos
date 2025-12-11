@@ -1,0 +1,60 @@
+/* 
+Instituto Tecnológico de Costa Rica.
+Análisis de Algoritmos.
+Tarea 09 DP Knapsack.
+Estudiante:
+	Tamara Nicole Rodríguez Luna.
+Carnet:
+	2021077818.
+DP Knapsack.
+*/
+
+hacerMatriz(fil,col):=block(  
+   makelist(makelist(0, i, col), j, fil)
+);
+
+
+alistarMatriz(matriz, numCol, obj):=block(
+    [nombresColumnas],
+    nombresColumnas: [xx],
+    for i:1 thru numCol do(
+        nombresColumnas: endcons(i, nombresColumnas)
+    ),
+    for i:1 thru length(obj) do(
+        matriz[i]: cons(obj[i][1], matriz[i])
+    ),
+    matriz: cons(nombresColumnas, matriz),
+    return(matriz)
+);
+
+ks(c,obj):=block(
+    [res, n, temp1, temp2],
+    f: length(obj),
+    res: hacerMatriz(f,c),
+    for i:1 thru f do(
+        for j:1 thru c do(
+            if obj[i][2][2] <= j then(
+                if i > 1 then(
+                    if j < obj[i][2][2] then(
+                        res[i][j]: res[i-1][j]
+                    ) else if j = obj[i][2][2] then(
+                        temp1: res[i-1][j],
+                        temp2: obj[i][2][1],
+                        res[i][j]:max(temp1,temp2)
+                    ) else(
+                        temp1: res[i-1][j],
+                        temp2: obj[i][2][1] + res[i-1][j-obj[i][2][2]],
+                        res[i][j]:max(temp1,temp2)
+                    )
+                ) else(
+                    res[i][j]: obj[i][2][1]
+                )
+            ) else(
+                if i > 1 then(
+                    res[i][j]: res[i-1][j]
+                )
+            )
+        )
+    ),
+    return(alistarMatriz(res, c, obj))
+);

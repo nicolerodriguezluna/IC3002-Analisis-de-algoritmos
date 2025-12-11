@@ -1,0 +1,67 @@
+/* 
+Instituto Tecnológico de Costa Rica.
+Análisis de Algoritmos.
+Tarea 04 Binary Search.
+Estudiante:
+	Tamara Nicole Rodríguez Luna.
+Carnet:
+	2021077818.
+Binary Search.
+*/
+
+bsearch(num,vec):=block(           /*Por lo tanto, el tiempo total de ejecución del programa está dado por: T(n)=log(n)+5 = O(log(n))*/
+    [ini,m,fin,res],                         /*1*/
+    if vec # [] then (
+        ini:1,                               /*1*/
+        fin:length(vec),                     /*1*/
+        m: ceiling((fin+ini)/2),             /*1*/
+        res:vec[m],                          /*1*/
+        bsearchAux(num,vec,ini,fin,m,res)    /*log(n)*/
+    ) else (                     		 
+        false                             	 /*1, Se ignora para el cálculo por ser el mejor caso.*/
+    )
+);
+
+bsearchAux(num,vec,ini,fin,m,res):=block(           	/*T(n/2)+5=log(n)*/
+    /*Para el análisis de la función se define  T(1) como una lista con 
+	solo 1 elemento por lo tanto considerando ambos prints y el if para dar 
+	el resultado de si se encontró o no el elemento T(1)=3*/
+    printf(true, "Lista: ~d ~d  m:~d", ini, fin, m),    /*1*/
+    print(vec),                                         /*1*/
+    if ini = fin and fin = m then(                      /*Ignoramos por ser el mejor caso*/
+        if res = num then								(/*Para definir T(1) se puede tomar el if o el else porque pesan igual.*/
+            return(m)                                   /*1*/
+        ) else(                                         /*1*/
+            false
+        )
+    /*Tanto el if de menor como el de mayor tienen el mismo peso, por lo 
+	tanto cualquiera de ellos dos se pueden considerar como el peor caso*/
+    ) else if res < num then (                          /*T(n/2)+3*/
+        ini: m+1,                                       /*1*/
+        m: ceiling((fin+ini)/2),                        /*1*/
+        res:vec[m],                                     /*1*/
+        bsearchAux(num,vec,ini,fin,m,res)               /*T(n/2) porque se va a analizar la mitad derecha de la lista.*/
+    ) else if res > num then (
+        fin: m-1,                                       /*1*/
+        m: ceiling((fin+ini)/2),                        /*1*/
+        res:vec[m],                                     /*1*/
+        bsearchAux(num,vec,ini,fin,m,res)               /*T(n/2) porque se va a analizar la mitad izquierda de la lista*/
+    ) else (                                            /*1, Se ignora para el cálculo por ser el mejor caso.*/
+        return(m)
+    )
+);
+
+/*Por lo tanto para resolver bsearchAux:*/
+/*T(1) = 3*/        			/*Debido que al recibir una lista con 1 solo elemento hace 2 prints y retorna el resultado.*/
+/*T(n) = T(n/2)+5*/
+
+/*Con ayuda de Wolfram Alpha*/
+/*t(1)=3, t(n)=t(n/2)+5*/
+
+/*Resultado de Wolfram*/
+/*T(n) = 5log(n)*/ 
+
+
+/*log2(n) = log(n)*/
+
+/*O(log(n)) cuando n -> ∞*/

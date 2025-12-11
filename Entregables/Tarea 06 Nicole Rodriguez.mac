@@ -1,0 +1,101 @@
+/* 
+Instituto Tecnológico de Costa Rica.
+Análisis de Algoritmos.
+Tarea 06 Heap Sort.
+Estudiante:
+	Tamara Nicole Rodríguez Luna.
+Carnet:
+	2021077818.
+Heap Sort.
+*/
+insertHeap(elemento,lista):=block(
+    [posEle, posPadre],
+    lista: endcons(elemento, lista),
+    if length(lista) # 0 then (
+        posEle: length(lista),
+        posPadre: floor(posEle/2),
+        while posPadre # 0 and lista[posEle] > lista[posPadre] do (
+            lista[posEle]: lista[posPadre],
+            lista[posPadre]: elemento,
+            posEle: posPadre,
+            posPadre: floor(posEle/2)
+        )
+    ),
+	return(lista)
+);
+
+deleteHeap(lista):=block(
+    [res, elemento, pos, hijoIzq, hijoDer, cambio],
+    cambio: true,
+    pos: 1,
+    hijoIzq: 2*pos,
+    hijoDer: 2*pos+1,
+    elemento: lista[1],
+    lista[1]: lista[length(lista)],
+    lista[length(lista)]: elemento,
+    lista: firstn(lista, length(lista)-1),
+    res: [elemento],
+    if length(lista) < hijoIzq then (
+        cambio: false
+    ),
+    while cambio do (
+        if hijoDer <= length(lista) then (
+            if lista[hijoIzq] > lista[pos] or lista[hijoDer] > lista[pos] then (
+                if lista[hijoIzq] >= lista[hijoDer] then (
+                    elemento: lista[pos],
+                    lista[pos]: lista[hijoIzq],
+                    lista[hijoIzq]: elemento,
+                    pos: hijoIzq
+                ) else (
+                    elemento: lista[pos],
+                    lista[pos]: lista[hijoDer],
+                    lista[hijoDer]: elemento,
+                    pos: hijoDer
+                ),
+                hijoIzq: 2*pos,
+                hijoDer: 2*pos+1,
+                if length(lista) < hijoIzq then (
+                    cambio: false
+                )
+            ) else (
+                cambio: false
+            )
+        ) else (
+            if lista[hijoIzq] > lista[pos] then (
+                elemento: lista[pos],
+                lista[pos]: lista[hijoIzq],
+                lista[hijoIzq]: elemento,
+                pos: hijoIzq,
+                hijoIzq: 2*pos,
+                hijoDer: 2*pos+1,
+                if length(lista) < hijoIzq then (
+                    cambio: false
+                )
+            ) else (
+                cambio: false
+            )
+        )
+    ),
+    res: endcons(lista, res),
+    return(res)
+);
+
+heapSort(lista):=block(
+    [arbol, eliminado],
+    arbol:[],
+    print(arbol),
+    for elemento in lista do (
+        arbol: insertHeap(elemento,arbol),
+        print(arbol)
+    ),
+    print("-----"),
+    lista:[],
+    print(arbol),
+    for elemento in arbol do (
+        eliminado: deleteHeap(arbol),
+        lista: cons(eliminado[1], lista),
+        arbol: eliminado[2],
+        print(arbol)
+    ),
+	return(lista)
+);

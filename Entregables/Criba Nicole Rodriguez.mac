@@ -1,0 +1,49 @@
+/* 
+Instituto Tecnológico de Costa Rica.
+Análisis de Algoritmos.
+Tarea 01 Wxmaxima.
+Estudiante:
+	Tamara Nicole Rodríguez Luna.
+Carnet:
+	2021077818.
+La criba de Eratóstenes.
+*/
+
+makeList(n):=makelist(i,i,2,n);
+
+criba(n):=block(
+    [list, result],
+    list: makeList(n),
+    result: makelist(),
+    firstOfList: first(list),
+    result: cons(firstOfList, result),
+    list: deleteMultipleNumber(list, firstOfList),
+    result: append(result,criba_aux(list, result)),
+    result: deleteDuplicateNumber(result),
+    return(result)
+);
+
+criba_aux(list, result):=block(
+    if list = [] then(
+        return([])
+    ) else (
+		firstOfList:first(list),
+		result: endcons(firstOfList, result),
+		list: deleteMultipleNumber(list, firstOfList),
+		result: append(result,criba_aux(list, result))
+		),
+	return(result)
+);
+
+deleteMultipleNumber(list, n):=block(
+    for e in list do (
+        if remainder(e, n) = 0 then (
+            list: delete(e, list)
+        )
+    ),
+    return(list)
+);
+
+deleteDuplicateNumber(list):=block(
+    return(listify(setify(list)))
+);
